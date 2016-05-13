@@ -2,10 +2,10 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>test inversion d'une image dans <canvas id="canvas" width="300" height="300"></canvas></title>
+    <title>test animation</title>
   </head>
   <body>
-    <canvas id="canvas" width="460" height="300"></canvas>
+    <canvas id="canvas" width="800" height="600"></canvas>
   </body>
 
 
@@ -13,10 +13,21 @@
     var canvas = document.getElementById('canvas');
     var ctx = canvas.getContext('2d');
     var hud = new Image();
-    hud.src = 'coin-tap-game-hud.png'
+    hud.src = 'bg_4_02.jpg';
+    hud.onload = function(){
+      ctx.drawImage(hud,0,0);
+    }
 
-    ctx.drawImage(hud,0,0,100,100,0,0,100,100);
+    var heros = {
+      x:100,
+      y:100,
+      w:10,
+      h:10
+    }
 
+
+    ctx.fillRect(heros.x,heros.y,heros.w,heros.h)
+    //
     //
     // function inverseImage(){
     //   ctx.save();

@@ -186,6 +186,19 @@ window.document.addEventListener('DOMContentLoaded', function(){
     danger: true
   });
 
+  var claw2 = getSprite({
+    context: canvas.getContext('2d'),
+    sx : 1100,
+    sy : 0,
+    sw: 100,
+    sh: 100,
+    dx : 500,
+    dy : 370,
+    dw : 100,
+    dh : 100,
+    ratio : 0.8,
+    danger: true
+  });
 
   //Instanciation d'une pièce
   var coin = getAnimatedSprite({
