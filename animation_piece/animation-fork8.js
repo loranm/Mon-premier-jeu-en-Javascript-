@@ -1,5 +1,11 @@
 window.document.addEventListener('DOMContentLoaded', function(){
-  console.log('DOM chargé');
+  /*****************************************************************************
+  Définition des images utilisées
+  *****************************************************************************/
+  var mySpriteSheet= new Image();
+  mySpriteSheet.src = 'img/mySpriteSheet.png';
+  var myBG = new Image();
+  myBG.src = 'img/bg_4_02.jpg';
 
   /*****************************************************************************
   Définition du canvas
@@ -9,55 +15,127 @@ window.document.addEventListener('DOMContentLoaded', function(){
   canvas.width = 1000;
 
 
-/*****************************************************************************
-            Définition des images utilisées
-******************************************************************************/
-  var mySpriteSheet= new Image();
-  mySpriteSheet.src = 'img/mySpriteSheet.png';
-  var myBG = new Image();
-  myBG.src = 'img/bg_4_02.jpg';
+  /*****************************************************************************
+  Définition des sprites
+  *****************************************************************************/
+  var ground = [{
+    x1: 0,
+    x2: 450,
+    y1: 500,
+    y2: 500
+  }]
 
-/******************************************************************************/
+  var elements = [
+    {img: myBG,
+      sx : 0,
+      sy : 0,
+      sw : 1000,
+      sh: 720,
+      dx : 0,
+      dy : 0,
+      dw : 1000,
+      dh : 720,
+      scenery : true,
+    },
+    { sx : 1100,
+      sy : 0,
+      dx : 800,
+      dy : 610,
+      dw : 100,
+      dh : 100,
+      ratio : 0.7,
+      danger: true,
+      scenery : true
+
+    },
+    {
+      sx : 1500,
+      sy : 0,
+      dx : 620,
+      dy : 575,
+      dw : 100,
+      dh : 100,
+      scenery : true
+    },
+    {
+      sx : 0,
+      sy : 0,
+      dx : 500,
+      dy : 100,
+      dw : 100,
+      dh : 100,
+      animation: true,
+      numberOfFrames : 9,
+      ticksPerFrame : 2
+    },
+    {
+      sx : 0,
+      sy : 800,
+      dx : 300,
+      dy : 600,
+      dw : 100,
+      dh : 100,
+      moveFrom : 1,
+      moveTo: 200,
+      moving : true,
+      numberOfFrames : 7,
+      ticksPerFrame : 5
+    },
+    {
+      sx : 0,
+      sy : 800,
+      dx : 100,
+      dy : 650,
+      dw : 100,
+      dh : 100,
+      ratio: 0.5,
+      moveFrom : 10,
+      moveTo: 200,
+      moving : true,
+      numberOfFrames : 7,
+      ticksPerFrame : 5
+    },
+    {
+      sx : 0,
+      sy : 800,
+      dx : 300,
+      dy : 640,
+      dw : 100,
+      dh : 100,
+      ratio: 0.5,
+      moveFrom : 1,
+      moveTo: 1000,
+      moving : true,
+      numberOfFrames : 7,
+      ticksPerFrame : 5
+    },
+    {
+      context: canvas.getContext('2d'),
+      sx : 0,
+      sy : 400,
+      dx : 100,
+      dy : 570,
+      dw : 100,
+      dh : 100,
+      heros : true,
+      canRun: true,
+      numberOfFrames : 22,
+      ticksPerFrame : 2,
+    }
+  ];
 
 /******************************************************************************
-      Constitution du décor (scenery)
+    Propriétés particulières
 *******************************************************************************/
+
   var danger = [];
   var bonus = [];
-  var scenery = [];
-  var animated = [];
-  var runners = []
-
-  var createScenery = function(option){
-      for (var i = 0; i < option.length; i ++){
-        option[i].render();
-      };
-    };
-
-  var createAnimation = function(option){
-      for (var i = 0; i < option.length; i ++){
-        option[i].render();
-        option[i].update();
-      };
-    };
-
-  var createRunners = function(option){
-      for (var i = 0; i < option.length; i ++){
-        option[i].render();
-        option[i].update();
-        option[i].move();
-      };
-    };
 
 /******************************************************************************
               Fonctions Constructeurs
 ******************************************************************************/
-
-//Fonction constructeur qui affiche un sprite
   var Sprite = function(options) {
-
-      //propriétés liées au rendu de l'image
-      this.context = options.context;
+      this.context = options.context || canvas.getContext('2d');
       this.image = options.img || mySpriteSheet;
       this.sx = options.sx;
       this.sy = options.sy;
@@ -69,6 +147,7 @@ window.document.addEventListener('DOMContentLoaded', function(){
       this.dh = options.dh;
       this.ratio = options.ratio || 1;
       this.frameIndex = 0;
+      this.scenery = options.scenery;
       this.danger = options.danger || false;
 
 
@@ -91,7 +170,6 @@ window.document.addEventListener('DOMContentLoaded', function(){
       if(this.bonus){
         bonus.push(this);
       }
-      scenery.push(this);
   };
 
 
@@ -101,6 +179,8 @@ window.document.addEventListener('DOMContentLoaded', function(){
     this.tickCount = 0,
     this.ticksPerFrame = options.ticksPerFrame || 0
     this.numberOfFrames = options.numberOfFrames || 1;
+    this.animation = options.animation;
+
 
     this.update = function(){ // anime l'image
     this.tickCount += 1;
@@ -113,8 +193,6 @@ window.document.addEventListener('DOMContentLoaded', function(){
         };
       };
     };
-    scenery.pop()
-    animated.push(this);
   };
 
 
@@ -123,6 +201,7 @@ window.document.addEventListener('DOMContentLoaded', function(){
 
     this.moveTo = options.moveTo;
     this.moveFrom = options.moveFrom;
+    this.moving = options.moving;
     this.startingSY = this.sy;
     this.move = function(){ //Effectue une translation de l'image
     if(this.dx > this.moveTo){
@@ -141,8 +220,6 @@ window.document.addEventListener('DOMContentLoaded', function(){
     }
 
   };
-  animated.pop();
-  runners.push(this);
   }
 
 /******************************************************************************
@@ -150,6 +227,7 @@ window.document.addEventListener('DOMContentLoaded', function(){
 ******************************************************************************/
   var Heros = function(options){
 
+    this.heros = options.heros;
     this.vx = 5;
     this.vy = 1;
     this.canRun = options.canRun;
@@ -165,34 +243,9 @@ window.document.addEventListener('DOMContentLoaded', function(){
         }
       };
 
-    // this.jump = function(){
-    //
-    // };
-    //
-    //
-    // this.fall = function(){
-    //   if (this.dy < 570){
-    //     this.vy +=0.25;
-    //     this.vy *=0.99;
-    //     this.dy += this.vy;
-    //     this.dx += this.vx;
-    //     this.fall()
-    //   }
-    // }
-    //
-    // this.jump = function(){
-    //   if (this.dy > 570){
-    //     this.vy -=0.25;
-    //     this.vy *=0.99;
-    //     this.dy += this.vy;
-    //     this.dx += this.vx;
-    //   }
-    // }
-
     this.run = function(direction, animation){
       if(direction == 'right'){
         this.sy = animation;
-        console.log(this.dx)
         this.numberOfFrames = 27
         this.dx += 5;
         this.testCollision();
@@ -204,8 +257,22 @@ window.document.addEventListener('DOMContentLoaded', function(){
         this.testCollision();
       };
     };
-    animated.pop()
-  };
+
+    this.hasContact = function(){
+      return true;
+    };
+
+    /* ajouter une méthode 'hasContact' qui renvoie true si le dy+dh du sprite est égal au y de ground ou de plaform*/
+    this.fall = function(){
+      if (!this.hasContact()){
+        this.vy +=0.25;
+        this.vy *=0.99;
+        this.dy += this.vy;
+        this.dx += this.vx;
+        this.fall();
+      }
+    }
+    };
 
   (function(){
     window.document.addEventListener('keydown', function(e){
@@ -266,8 +333,6 @@ window.document.addEventListener('DOMContentLoaded', function(){
   })();
 
 
-
-
 /*****************************************************************************
         CHAINE DE PROTOTYPAGE
 *****************************************************************************/
@@ -291,151 +356,80 @@ window.document.addEventListener('DOMContentLoaded', function(){
   }
 
 /******************************************************************************
+  Constitution du décor (scenery)
+*******************************************************************************/
+  var stage = [];
+
+  (function createStage(){
+    for (var i = 0; i < elements.length; i++){
+      if (elements[i].scenery){
+        stage[i] = getSprite(elements[i]);
+      };
+      if (elements[i].animation){
+        stage[i] = getAnimatedSprite(elements[i]);
+      };
+      if (elements[i].moving){
+        stage[i] = getMovingSprite(elements[i]);
+      };
+      if (elements[i].heros){
+        stage[i] = getHeros(elements[i]);
+      };
+    }
+  })();
+
+
+  var displayStage = function(options){
+    for (var i = 0; i < options.length; i++){
+      if (options[i].scenery){
+        options[i].render();
+      };
+      if (options[i].animation){
+        options[i].render();
+        options[i].update();
+      };
+      if (options[i].moving){
+        options[i].render();
+        options[i].update();
+        options[i].move();
+      };
+      if (options[i].heros){
+        options[i].render();
+        options[i].update();
+        // console.log(options[i].fall());
+      };
+    };
+  };
+
+/******************************************************************************
         GAME LOOP
 *******************************************************************************/
-
-
-  //Animation des sprites
   function gameLoop() {
     canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
-      createScenery(scenery);
-      createAnimation(animated);
-      createRunners(runners);
 
-      tim.render();
-      tim.update();
+      displayStage(stage);
 
     window.requestAnimationFrame(gameLoop);
   };
 
   mySpriteSheet.addEventListener('load', gameLoop);
 
-/*******************************************************************************
-                              Définition des sprites
-*******************************************************************************/
-
-
-  //instanciation des sprites fixes
-
-  var bg = getSprite({
-    context: canvas.getContext('2d'),
-    img: myBG,
-    sx : 0,
-    sy : 0,
-    sw : 1000,
-    sh: 720,
-    dx : 0,
-    dy : 0,
-    dw : 1000,
-    dh : 720,
-    danger: false
-  });
-
-  var claw = getSprite({
-    context: canvas.getContext('2d'),
-    sx : 1100,
-    sy : 0,
-    dx : 800,
-    dy : 610,
-    dw : 100,
-    dh : 100,
-    ratio : 0.7,
-    danger: true
-  });
-
-  var door = getSprite({
-    context: canvas.getContext('2d'),
-    sx : 1500,
-    sy : 0,
-    dx : 620,
-    dy : 575,
-    dw : 100,
-    dh : 100,
-  });
-
-
-  //Instanciation d'une pièce
-  var coin = getAnimatedSprite({
-    context: canvas.getContext('2d'),
-    sx : 0,
-    sy : 0,
-    dx : 500,
-    dy : 100,
-    dw : 100,
-    dh : 100,
-    numberOfFrames : 9,
-    ticksPerFrame : 2,
-  });
-
-  var coin = getAnimatedSprite({
-    context: canvas.getContext('2d'),
-    sx : 0,
-    sy : 0,
-    dx : 500,
-    dy : 300,
-    dw : 100,
-    dh : 100,
-    ratio : 0.5,
-    numberOfFrames : 9,
-    ticksPerFrame : 2,
-  });
-
-  var coin = getAnimatedSprite({
-    context: canvas.getContext('2d'),
-    sx : 0,
-    sy : 0,
-    dx : 100,
-    dy : 200,
-    dw : 100,
-    dh : 100,
-    ratio : 0.6,
-    numberOfFrames : 9,
-    ticksPerFrame : 4,
-  });
-
-
-  //Instanciation d'un lapin
-  var lapin = getMovingSprite({
-    context: canvas.getContext('2d'),
-    sx : 0,
-    sh: 100,
-    dx : 300,
-    dy : 600,
-    dw : 100,
-    dh : 100,
-    moveFrom : 100,
-    moveTo: 600,
-    numberOfFrames : 7,
-    ticksPerFrame : 5,
-  });
-
-  var lapin = getMovingSprite({
-    context: canvas.getContext('2d'),
-    sx : 0,
-    sy : 800,
-    dx : 300,
-    dy : 600,
-    dw : 100,
-    dh : 100,
-    moveFrom : 0,
-    moveTo: 200,
-    numberOfFrames : 7,
-    ticksPerFrame : 5,
-  });
-
-
-  //instanciation de Tim le héros
-  var tim = getHeros({
-    context: canvas.getContext('2d'),
-    sx : 0,
-    sy : 400,
-    dx : 100,
-    dy : 570,
-    dw : 100,
-    dh : 100,
-    numberOfFrames : 22,
-    ticksPerFrame : 2,
-    canRun: true,
-  });
-
 });
+
+
+
+
+
+// this.jump = function(){
+//
+// };
+//
+//
+//
+// this.jump = function(){
+//   if (this.dy > 570){
+//     this.vy -=0.25;
+//     this.vy *=0.99;
+//     this.dy += this.vy;
+//     this.dx += this.vx;
+//   }
+// }
