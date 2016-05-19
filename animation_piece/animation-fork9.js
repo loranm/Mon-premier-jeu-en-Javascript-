@@ -3,14 +3,14 @@ window.document.addEventListener('DOMContentLoaded', function(){
   Définition des images utilisées
   *****************************************************************************/
   var mySpriteSheet= new Image();
-  mySpriteSheet.src = 'img/mySpriteSheet.png';
+  mySpriteSheet.src = 'img/mySpriteSheet200.png';
   var myBG = new Image();
   myBG.src = 'img/bg_4_02.jpg';
 
   /*****************************************************************************
   Définition du canvas
   *****************************************************************************/
-  var canvas = document.getElementById('coinAnimation');
+  var canvas = document.getElementById('stage');
   canvas.height = 720;
   canvas.width = 1000;
 
@@ -21,22 +21,20 @@ window.document.addEventListener('DOMContentLoaded', function(){
   var ground = [{
     nom: 'ground0',
     x1: 0,
-    x2: 200,
-    y1: 570,
-    y2: 570
-  },{
-    nom: 'ground1',
-    x1: 300,
-    x2: 500,
-    y1: 500,
-    y2: 500
-  },{
-    nom: 'ground2',
-    x1: 501,
-    x2: 700,
-    y1: 570,
-    y2: 570
-  }]
+    x2: 1000,
+    y1: 610,
+    y2: 610
+  }
+  // {
+  //   nom: 'ground0',
+  //   x1: 300,
+  //   x2: 500,
+  //   y1: 200,
+  //   y2: 200
+  // }
+  ]
+
+
 
   var elements = [
     {img: myBG,
@@ -50,29 +48,42 @@ window.document.addEventListener('DOMContentLoaded', function(){
       dh : 720,
       scenery : true,
     },
-    { sx : 1100,
-      sy : 0,
+    { nom: 'door',
+      sx : 1900,
+      sy : 500,
       dx : 800,
-      dy : 610,
+      dy : 571,
       dw : 100,
       dh : 100,
-      ratio : 0.7,
-      danger: true,
+      ratio : 1,
       scenery : true
 
     },
+    // {
+    //   nom: 'flora',
+    //   sx : 1800,
+    //   sy : 500,
+    //   dx : 620,
+    //   dy : 575,
+    //   dw : 100,
+    //   dh : 100,
+    //   scenery : true
+    // },
     {
-      sx : 1500,
-      sy : 0,
-      dx : 620,
+      nom: 'flora2',
+      sx : 1600,
+      sy : 500,
+      dx : 420,
       dy : 575,
       dw : 100,
       dh : 100,
-      scenery : true
+      scenery : true,
+      danger : true
     },
     {
+      nom : 'coin1',
       sx : 0,
-      sy : 0,
+      sy : 1600,
       dx : 500,
       dy : 100,
       dw : 100,
@@ -82,64 +93,18 @@ window.document.addEventListener('DOMContentLoaded', function(){
       ticksPerFrame : 2
     },
     {
-      nom: 'lapinGros',
-      sx : 0,
-      sy : 800,
-      dx : 300,
-      dy : 000,
-      dw : 100,
-      dh : 100,
-      moveFrom : 1,
-      ratio : 1,
-      moveTo: 200,
-      moving : true,
-      numberOfFrames : 7,
-      ticksPerFrame : 5
-    },
-    {
-      nom: 'lapinPetit',
-      sx : 0,
-      sy : 800,
-      dx : 100,
-      dy : 650,
-      dw : 100,
-      dh : 100,
-      ratio: 0.5,
-      moveFrom : 10,
-      moveTo: 100,
-      moving : true,
-      numberOfFrames : 7,
-      ticksPerFrame : 5
-    },
-    {
-      nom: 'lapinNormal',
+      nom: 'monster',
       sx : 0,
       sy : 800,
       dx : 0,
-      dy : 0,
+      dy : 610,
       dw : 100,
       dh : 100,
-      ratio: 1,
-      moveFrom : 1,
-      moveTo: 1000,
       moving : true,
+      moveFrom : 1,
+      moveTo: 500,
       numberOfFrames : 7,
       ticksPerFrame : 5
-    },
-    {
-      nom : 'Tim',
-      sx : 0,
-      sy : 400,
-      dx : 100,
-      dy : 570,
-      dw : 100,
-      dh : 100,
-      heros : true,
-      moveFrom : 1,
-      moveTo: 1000,
-      canRun: true,
-      numberOfFrames : 22,
-      ticksPerFrame : 2,
     }
   ];
 
@@ -148,50 +113,52 @@ window.document.addEventListener('DOMContentLoaded', function(){
 *******************************************************************************/
 
   var danger = [];
+  var ennemy = []
   var bonus = [];
 
 /******************************************************************************
               Fonctions Constructeurs
 ******************************************************************************/
-  var Sprite = function(options) {
-      this.nom = options.nom || 'item',
-      this.context = options.context || canvas.getContext('2d');
-      this.image = options.img || mySpriteSheet;
-      this.sx = options.sx;
-      this.sy = options.sy;
-      this.sw = options.sw || 100;
-      this.sh = options.sh || 100;
-      this.dx = options.dx;
-      this.dy = options.dy;
-      this.dw = options.dw;
-      this.dh = options.dh;
-      this.ratio = options.ratio || 1;
-      this.frameIndex = 0;
-      this.scenery = options.scenery;
-      this.danger = options.danger || false;
+var Sprite = function(options) {
+  this.nom = options.nom || 'item',
+  this.context = options.context || canvas.getContext('2d');
+  this.image = options.img || mySpriteSheet;
+  this.sx = options.sx;
+  this.sy = options.sy;
+  this.sw = options.sw || 100;
+  this.sh = options.sh || 100;
+  this.dx = options.dx;
+  this.dy = options.dy;
+  this.dw = options.dw;
+  this.dh = options.dh;
+  this.ratio = options.ratio || 1;
+  this.frameIndex = 0;
+  this.index;
+  this.scenery = options.scenery;
+  this.danger = options.danger || false;
 
 
-      this.render = function(){ //affiche l'image dans le canvas
-          this.context.drawImage(
-            this.image, //insert l'image
-            this.sx + this.sw * this.frameIndex,
-            this.sy,
-            this.sw, // slice l'image en X
-            this.sh,
-            this.dx,
-            this.dy,
-            this.dw * this.ratio,
-            this.dh * this.ratio);
-      };
-
-      if(this.danger){
-        danger.push(this);
-      }
-      if(this.bonus){
-        bonus.push(this);
-      }
+  this.render = function(){ //affiche l'image dans le canvas
+  this.context.drawImage(
+    this.image, //insert l'image
+    this.sx + this.sw * this.frameIndex,
+    this.sy,
+    this.sw, // slice l'image en X
+    this.sh,
+    this.dx,
+    this.dy,
+    this.dw * this.ratio,
+    this.dh * this.ratio);
   };
 
+  if(this.danger){
+    this.index = danger.length;
+    danger[this.index] = this;
+  }
+  if(this.bonus){
+    bonus.push(this);
+  }
+};
 
 //Fonction constructeur qui anime le sprite
   var AnimatedSprite = function(options){
@@ -219,194 +186,155 @@ window.document.addEventListener('DOMContentLoaded', function(){
 //Fonction constructeur qui déplace le sprite sur le canvas
   var MovingSprite = function(options){
 
-    this.moveTo = options.moveTo;
-    this.moveFrom = options.moveFrom;
+    this.moveTo = options.moveTo || this.dx;
+    this.moveFrom = options.moveFrom || this.dx;
     this.moving = options.moving;
+    this.vx = 5
     this.startingSY = this.sy;
     this.feetOnGround = true;
 
-    this.fall = function(){
-      // this.vy +=0.25;
-      // this.vy *=0.99;
-      // this.dy += this.vy;
-      // this.dx += this.vx
-      this.dy++;
-      this.dx++;
-      this.feetOnGround = true;
-    };
+    // this.fall = function(){
+    //   if (this.vy > 0){
+    //     this.vy -=1
+    //     this.dy += 1;
+    //     this.dx += 0.5;
+    //     if (this.dy >= canvas.height || this.dx >=canvas.width){
+    //       this.dx = this.moveFrom;
+    //     }
+    //   }else if (this.vy == 0){
+    //     this.feetOnGround = true;
+    //   }
+    // };
 
 
-    this.move = function(){ //Effectue une translation de l'image
-      if(this.feetOnGround){
+    this.move = function(start, end, sy){ //Effectue une translation de l'image
+      if (start != end){
+        if(this.feetOnGround){
 
-        if(this.dx > this.moveTo){
-          this.dir = 1;
-          this.sy = this.startingSY-100;
-        }
-        if(this.dx < this.moveFrom){
-        this.dir = 0;
-        this.sy = this.startingSY;
-        }
+          if(this.dx > 500){
+            this.dir = 1;
+            this.sy = sy+100;
+          }
+          if(this.dx < 10){
+            this.dir = 0;
+            this.sy = sy;
+          }
 
-        if (this.dir){
-          this.dx -=1;
-        }else{
-          this.dx +=1;
-        };
-
-        for (var i = 0; i < ground.length; i++){
-          var tab = [];
-          if (this.dx >=ground[i].x1 && this.dx <= ground[i].x2){
-            tab.push(ground[i]);
-            this.dy = tab[0].y1+(this.dx/tab[0].x2)*(tab[0].y2-tab[0].y1);
-            console.log(tab)
-          }else{this.feetOnGround = false; this.fall()};
+          if (this.dir){
+            this.dx -= this.vx;
+          }else{
+            this.dx += this.vx;
+          };
         };
       };
+    };
+
+    // this.jump = function(){
+    //   this.feetOnGround = false;
+    //   this.sy = 600;
+    //   this.numberOfFrames = 8;
+    //   this.dy -=100;
+    //   this.dx +=50;
+    //   window.setTimeout(function(){this.dy += 100;this.dx +=50}, 250);
+    //   window.setTimeout(function(){
+    //     this.feetOnGround = true;
+    //     console.log(this.feetOnGround)
+    //   }, 500);
+    // };
+
+
+  };
+
+
+
+
+
+          // for (var i = 0; i < ground.length; i++){
+          //   var tab = [];
+          //   if (this.dx >=ground[i].x1 && this.dx <= ground[i].x2){
+          //     tab.push(ground[i]);
+          //     this.dy = tab[0].y1+(this.dx/tab[0].x2)*(tab[0].y2-tab[0].y1);
+          //   }else{this.feetOnGround = false; this.fall()};
+          // };
+
+
+          /*******
+          jump -> function qui fait tout le saut
+
+        };
+      }
     };
   };
 
 
 /******************************************************************************/
   var Heros = function(options){
-
     this.heros = options.heros;
-    this.vx = 5;
-    this.vy = 1;
-    this.canRun = options.canRun;
+    this.jump = false;
+    this.gravity = 1;
+    this.speed = 1;
+    this.vy = 0;
+    this.vx = 0;
 
-    this.testCollision = function(){
-      for (var i = 0; i < danger.length; i++){
-        if (this.dx < danger[i].dx + danger[i].dw &&
-          this.dx + this.dw > danger[i].dx &&
-          this.dy < danger[i].dy + danger[i].dh &&
-          this.dh + this.dy > danger[i].dy){
-              this.dx = 10;
-          }
-        }
-      };
 
-    this.run = function(direction, animation){
-      if(direction == 'right'){
-        this.sy = animation;
-        this.numberOfFrames = 27
-        this.dx += 5;
-        this.testCollision();
-      };
 
-      if(direction == 'left'){
-        this.sy = animation;
-        this.dx -= 5;
-        this.testCollision();
-      };
+    this.jump = function(){
+      this.jump = true;
+
     };
-   };
 
-    //
-    //       switch(event){
-    //         case 39:
-    //         if(this.canRun){
-    //           this.canRun = false;
-    //           this.run('right', 100);
-    //           window.setthiseout(function(){
-    //             this.canRun = true;
-    //           },25)
-    //         }
-    //         break;
-    //
-    //         case 37:
-    //         if(this.canRun){
-    //           this.canRun = false;
-    //           this.run('left',200);
-    //           window.setthiseout(function(){
-    //             this.canRun = true;
-    //           },25)
-    //         }
-    //         break;
-    //
-    //         case 38:
-    //         if(this.canRun){
-    //           this.canRun = false;
-    //           this.jump();
-    //           window.setthiseout(function(){
-    //             this.canRun = true;
-    //           },25)
-    //         }
-    //         break;
-    //
-    //         case 40:
-    //         if(this.canRun){
-    //           this.canRun = false;
-    //           this.fall();
-    //           window.setthiseout(function(){
-    //             this.canRun = true;
-    //           },25)
-    //         };
-    //         break;
-    //       };
-    //     });
+    // this.testCollision = function(){
+    //   for (var i = 0; i < danger.length; i++){
+    //     if (this.dx < danger[i].dx + danger[i].dw &&
+    //       this.dx + this.dw > danger[i].dx &&
+    //       this.dy < danger[i].dy + danger[i].dh &&
+    //       this.dh + this.dy > danger[i].dy){
+    //         alert('collision');
+    //       }
+    //     }
     //   };
-    // };
+  };
+
+  (function(){
+    window.document.addEventListener('keydown', function(e){
+       var event = e.keyCode;
+
+        switch(event){
+          case 39:
+            tim.sy = 0;
+            tim.numberOfFrames = 27;
+            tim.moveFrom = tim.dx;
+            tim.moveTo = tim.dx +5;
+            tim.move(tim.moveFrom, tim.moveTo, tim.sy);
+            tim.testCollision()
+            tim.dx = tim.moveTo;
+            console.log('position x de Tim = ' + tim.dx)
+          break;
+
+          case 37:
+          tim.sy = 0;
+          tim.numberOfFrames = 27;
+          tim.moveFrom = tim.dx;
+          tim.moveTo = tim.dx -5;
+          tim.move(tim.moveFrom, tim.moveTo, tim.sy);
+          tim.dx = tim.moveTo;
+          break;
+
+          case 38:
+          if(tim.feetOnGround){
+            tim.jump();
+          }
+          break;
+        };
+      });
 
 
-  // (function(){
-  //   window.document.addEventListener('keydown', function(e){
-  //      var event = e.keyCode;
-  //      if(e.keyCode == 38 && e.keyCode == 39){
-  //        alert('Deux touches')
-  //      }
-  //
-  //       switch(event){
-  //         case 39:
-  //         if(tim.canRun){
-  //           tim.canRun = false;
-  //           tim.run('right', 100);
-  //           window.setTimeout(function(){
-  //             tim.canRun = true;
-  //           },25)
-  //         }
-  //         break;
-  //
-  //         case 37:
-  //         if(tim.canRun){
-  //           tim.canRun = false;
-  //           tim.run('left',200);
-  //           window.setTimeout(function(){
-  //             tim.canRun = true;
-  //           },25)
-  //         }
-  //         break;
-  //
-  //         case 38:
-  //         if(tim.canRun){
-  //           tim.canRun = false;
-  //           tim.jump();
-  //           window.setTimeout(function(){
-  //             tim.canRun = true;
-  //           },25)
-  //         }
-  //         break;
-  //
-  //         case 40:
-  //         if(tim.canRun){
-  //           tim.canRun = false;
-  //           tim.fall();
-  //           window.setTimeout(function(){
-  //             tim.canRun = true;
-  //           },25)
-  //         }
-  //
-  //       };
-  //
-  //
-  //       window.document.addEventListener('keyup',function(e){
-  //         tim.canRun = true;
-  //         tim.numberOfFrames = 22;
-  //         tim.sy = 400;
-  //       });
-  //   });
-  // })();
+        window.document.addEventListener('keyup',function(e){
+          tim.numberOfFrames = 22;
+          tim.sy = 200;
+        });
 
+      })();
 
 /*****************************************************************************
         CHAINE DE PROTOTYPAGE
@@ -434,6 +362,8 @@ window.document.addEventListener('DOMContentLoaded', function(){
   Constitution du décor (scenery)
 *******************************************************************************/
   var stage = [];
+
+
 
   (function createStage(){
     for (var i = 0; i < elements.length; i++){
@@ -465,17 +395,22 @@ window.document.addEventListener('DOMContentLoaded', function(){
       if (options[i].moving){
         options[i].render();
         options[i].update();
-        options[i].move();
-      };
-      if (options[i].heros){
-        options[i].render();
-        options[i].update();
-        options[i].move();
-        
-
+        options[i].move(options[i].moveTo,options[i].moveFrom,options[i].sy);
       };
     };
   };
+
+  var tim = getHeros({
+    sx : 0,
+    sy : 200,
+    dx : 100,
+    dy : 590,
+    dw : 100,
+    dh : 100,
+    numberOfFrames : 22,
+    ticksPerFrame : 5,
+  })
+
 
 /******************************************************************************
         GAME LOOP
@@ -484,10 +419,13 @@ window.document.addEventListener('DOMContentLoaded', function(){
     canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
 
       displayStage(stage);
+      tim.render();
+      tim.update();
 
     window.requestAnimationFrame(gameLoop);
   };
 
   mySpriteSheet.addEventListener('load', gameLoop);
+
 
 });

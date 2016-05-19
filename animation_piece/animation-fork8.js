@@ -10,7 +10,7 @@ window.document.addEventListener('DOMContentLoaded', function(){
   /*****************************************************************************
   Définition du canvas
   *****************************************************************************/
-  var canvas = document.getElementById('coinAnimation');
+  var canvas = document.getElementById('stage');
   canvas.height = 720;
   canvas.width = 1000;
 
