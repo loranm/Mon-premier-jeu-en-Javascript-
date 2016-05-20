@@ -13,7 +13,7 @@
       var canvas = document.getElementById('canvas');
       var ctx = canvas.getContext('2d');
 
-      var rect = {sx : 10, sy : 200, sh :25, sw: 25};
+      var rect = {sx : 10, sy : 200, sh :25, sw: 25, jumping: false};
 
       var fond = new Image();
       fond.src = 'bg_4_02.jpg';
@@ -21,7 +21,9 @@
 
       var ground = {debut : 0, fin : 300, hauteur : 250};
       var maxJump = ground.hauteur - 150;
-      var vx = -10
+      var up = -10;
+      var vy = 0;
+      var vx = 0;
 
       var canJump = function(){
         if(rect.sy == ground.hauteur){
@@ -32,18 +34,36 @@
 
       document.addEventListener('keydown', function(e){
         var event = e.keyCode;
-        console.log(event);
 
         switch (event) {
           case 39:
-            rect.sx += 10;
+          if (rect.jumping == false){
+            if (vx <= 5){
+              vx += 1
+            }
+            rect.sx += vx;
+          }
             break;
           case 37:
             rect.sx -= 10;
             break;
           case 38:
+          console.log(rect.jumping)
+
+            rect.jumping = true;
+            console.log(rect.jumping)
+
+            vy += 1;
+
+            if (vx == 0){
+              vx = 0
+            }else if(vx <= 5){
+              vx += 1;
+            }
+
               mass = 1;
-              rect.sy += vx;
+              rect.sy += vy;
+              rect.sx += vx;
             break;
 
         };
@@ -55,8 +75,17 @@
         var event = e.keyCode;
 
         switch(event){
+          case 39:
+          if (vx >= 0){
+            vx = 0;
+          }
+          console.log('ralentit ' + vx)
+          rect.sx += vx;
+
+            break;
           case 38:
           mass = 1.02;
+          rect.jumping = false
         }
       });
 
@@ -78,11 +107,10 @@
           }
 
           if (dir){
-            vx = 10;
-            console.log(dir);
+            vy = 12;
           }
           if(dir == false){
-            vx = -10;
+            vy = -12;
           }
 
         }

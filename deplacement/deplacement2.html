@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <canvas id="canvas" width="1000" height="600"></canvas>
+
+
+
+    <script type="text/javascript">
+      var canvas = document.getElementById('canvas');
+      var ctx = canvas.getContext('2d');
+      var canGoRight = false;
+      var canGoLeft = false;
+      var canJump = false;
+
+      var rect = {sx : 10, sy : 200, sh :25, sw: 25};
+
+      var gravity = function(){
+        if (rect.sx > ground.debut && rect.sx < ground.fin){
+          rect.sy *= mass;
+          if(rect.sy >= ground.hauteur){
+            rect.sy = ground.hauteur;
+          }
+
+          if(rect.sy <= maxJump){
+            var dir = 1
+          }
+
+          if (rect.sy >= ground.hauteur){
+            var dir = 0;
+          }
+
+          if (dir){
+            vy = 15;
+          }
+          if(dir == false){
+            vy = -15;
+          }
+        };
+      };
+
+      var goRight = function(){
+        if (canGoRight == true){
+          if (vx <5){
+            vx += 0.5
+          }
+          rect.sx += vx;
+        };
+      }
+
+      var goLeft = function(){
+        if (canGoLeft == true){
+          if (vx > -5){
+            vx -= 0.5;
+          }
+          rect.sx += vx;
+        };
+      }
+
+
+      var stopRunning = function(){
+        if (canGoRight == false){
+          if (vx > 0){
+            vx -= 0.5;
+          }
+          rect.sx += vx;
+        }
+
+        if (canGoLeft == false){
+          if (vx < 0){
+            vx += 0.5;
+          }
+          console.log(vx)
+          rect.sx += vx;
+        }
+      }
+
+
+      var goUp = function(){
+        if (canJump == true){
+          vy += 1;
+
+          if (vx == 0){
+            vx = 0
+          }else if(vx <= 5){
+            vx += 0.5;
+          }
+
+            mass = 1;
+            rect.sy += vy;
+            rect.sx += vx;
+
+        };
+      };
+
+      var stopJumping = function(){
+        if(canJump == false){
+          mass = 1.04;
+          if (vy >=0){
+            vy -= 1
+          }
+        }
+
+      }
+
+/*****************************************************************************
+      VARIABLE DU CANVAS
+*****************************************************************************/
+      var fond = new Image();
+      fond.src = 'bg_4_02.jpg';
+
+      var mass = 1.02;
+      var ground = {debut : 0, fin : 1000, hauteur : 550};
+      var maxJump = ground.hauteur - 150;
+      var vy = 0;
+      var vx = 0;
+
+      // var canJump = function(){
+      //   if(rect.sy == ground.hauteur){
+      //     return true;
+      //   }
+      // }
+
+/******************************************************************************
+    GESTION DU CLAVIER
+****************************************************************************/
+
+      document.addEventListener('keydown', function(e){
+        var event = e.keyCode;
+        console.log(event)
+
+        switch (event) {
+          case 39:
+          canGoRight = true;
+          break;
+
+          case 37:
+          canGoLeft = true;
+          break;
+
+          case 38:
+          canJump = true;
+          break;
+
+        };
+      });
+
+
+
+      document.addEventListener('keyup',function(e){
+        var event = e.keyCode;
+
+        switch(event){
+          case 39:
+          canGoRight = false;
+          break;
+          case 37:
+          canGoLeft = false;
+          break;
+          case 38:
+          canJump = false;
+          break;
+        }
+      });
+
+
+      var loop = function(){
+        ctx.clearRect(0,0,1000,600);
+        ctx.drawImage(fond,0,0,1000,600);
+        ctx.fillRect(rect.sx,rect.sy,rect.sh,rect.sw);
+        gravity();
+        goRight();
+        goLeft();
+        stopRunning();
+        goUp();
+        stopJumping();
+
+        window.requestAnimationFrame(loop);
+      }
+
+
+    loop();
+
+    </script>
+  </body>
+</html>

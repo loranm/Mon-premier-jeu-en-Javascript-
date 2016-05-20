@@ -276,7 +276,7 @@ var Sprite = function(options) {
             this.dy < stage[i].dy + stage[i].dh &&
             this.dh + this.dy > stage[i].dy+25){
               console.log('collision');
-              stage.splice(i,1);
+              this.dx -=100;
 
               window.setTimeout(function(){this.dying()},250);
 
