@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <canvas id="canvas" width="300" height="300"></canvas>
+
+
+
+    <script type="text/javascript">
+      var canvas = document.getElementById('canvas');
+      var ctx = canvas.getContext('2d');
+
+      var rect = {sx : 10, sy : 200, sh :25, sw: 25};
+
+      var fond = new Image();
+      fond.src = 'bg_4_02.jpg';
+      var mass = 1.02;
+
+      var ground = {debut : 0, fin : 300, hauteur : 250};
+      var maxJump = ground.hauteur - 150;
+      var vx = -10
+
+      var canJump = function(){
+        if(rect.sy == ground.hauteur){
+          return true;
+        }
+      }
+
+
+      document.addEventListener('keydown', function(e){
+        var event = e.keyCode;
+        console.log(event);
+
+        switch (event) {
+          case 39:
+            rect.sx += 10;
+            break;
+          case 37:
+            rect.sx -= 10;
+            break;
+          case 38:
+              mass = 1;
+              rect.sy += vx;
+            break;
+
+        };
+      });
+
+
+
+      document.addEventListener('keyup',function(e){
+        var event = e.keyCode;
+
+        switch(event){
+          case 38:
+          mass = 1.02;
+        }
+      });
+
+
+      var loop = function(){
+        ctx.clearRect(0,0,300,300);
+        ctx.drawImage(fond,0,0,300,300);
+        ctx.fillRect(rect.sx,rect.sy,rect.sh,rect.sw);
+        if (rect.sx > ground.debut && rect.sx < ground.fin){
+          rect.sy *= mass;
+          if(rect.sy >= ground.hauteur){
+            rect.sy = ground.hauteur;
+          }
+          if(rect.sy <= maxJump){
+            var dir = 1
+          }
+          if (rect.sy >= ground.hauteur){
+            var dir = 0;
+          }
+
+          if (dir){
+            vx = 10;
+            console.log(dir);
+          }
+          if(dir == false){
+            vx = -10;
+          }
+
+        }
+        window.requestAnimationFrame(loop);
+      }
+
+
+    loop();
+
+    </script>
+  </body>
+</html>
