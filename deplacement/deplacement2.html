@@ -150,21 +150,22 @@
 
 
 
-      document.addEventListener('keyup',function(e){
-        var event = e.keyCode;
+document.addEventListener('keyup',function(e){
+  var event = e.keyCode;
+  switch(event){
+    case 39:
+    canGoRight = false;
+    break;
 
-        switch(event){
-          case 39:
-          canGoRight = false;
-          break;
-          case 37:
-          canGoLeft = false;
-          break;
-          case 38:
-          canJump = false;
-          break;
-        }
-      });
+    case 37:
+    canGoLeft = false;
+    break;
+
+    case 38:
+    canJump = false;
+    break;
+  };
+});
 
 
       var loop = function(){
