@@ -227,6 +227,13 @@ var Sprite = function(options) {
       };
     };
 
+    if (this.dy + this.vy > canvas.height || this.dy < 0){
+      this.vy = -this.vy;
+    };
+    if (this.dx + this.vx > canvas.width || this.dx  < 0){
+      this.vx = -this.vx;
+    };
+
 
 
 
