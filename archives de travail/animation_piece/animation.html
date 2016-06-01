@@ -1,0 +1,67 @@
+  <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Démonstration Animation Canvas</title>
+    <!-- Bootstrap Core CSS -->
+     <link href="css/bootstrap.min.css" rel="stylesheet">
+     <!-- Custom CSS -->
+     <link href="css/grayscale.css" rel="stylesheet">
+     <style media="screen">
+     *.unselectable {
+        -moz-user-select: -moz-none;
+        -khtml-user-select: none;
+        -webkit-user-select: none;
+
+        /*
+          Introduced in IE 10.
+          See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+        */
+        -ms-user-select: none;
+        user-select: none;
+     }
+
+     .bonus {
+       position: absolute;
+       margin: auto;
+       /*visibility: hidden;*/
+       width :50px;
+       height: 50px
+     }
+
+     </style>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="animation-fork19.js"></script>
+  </head>
+  <body>
+
+  <div class="container">
+    <div class="row">
+      <div class="canvas unselectable <col-lg-offset-1 col-lg-9"  unselectable = "on">
+        <button class="btn btn-default" id = "message" style="visibility: hidden">Vous avez perdu une vie </button>
+        <canvas id="stage" >
+          Votre navigateur ne supporte pas HTM5...
+        </canvas>
+      </div>
+      <div class="col-lg-1" style="margin-top:20px">
+        <img src="./img/html.png" alt="Logo HTML5" id="html" class="bonus"/>
+        <img src="./img/css.png" alt="Logo CSS" id="css" class="bonus"/>
+        <img src="./img/js.png" alt="Logo javascript" id="javascript" class="bonus"/>
+        <img src="./img/mongo.png" alt="Logo javascript" id="mongo" class="bonus"/>
+        <img src="./img/meteor.png" alt="Logo meteor" id="meteor" class="bonus"/>
+        <img src="./img/node.png" alt="Logo node" id="node" class="bonus"/>
+        <img src="./img/angular.png" alt="Logo meteor" id="angular" class="bonus"/>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-offset-5">
+        <input type="submit" class="btn btn-default" id="start" value="Pause">
+      </div>
+    </div>
+
+  </div>
+
+
+  </body>
+
+</html>

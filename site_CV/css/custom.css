@@ -1,0 +1,43 @@
+*.unselectable {
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    /*
+Introduced in IE 10.
+See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+*/
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.bonus {
+    display: none;
+    width: 50px;
+    height: 50px;
+}
+
+.toHide{
+    display: none;
+}
+
+.toShow{
+    display: block;
+}
+
+#message{
+    display: none;
+    width: 400px;
+    height: 130px;
+    position: absolute;
+    top: 1800px;
+    left: 500px;
+    background-color: rgba(0,0,0,0.8);
+    border: 1px solid #42dca3;
+    font-family: sans-serif;
+    color: #42dca3;
+
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
