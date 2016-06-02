@@ -15,7 +15,7 @@ window.document.addEventListener('DOMContentLoaded', function() {
   canvas.width = 1000;
 
   var requestId; //stocke l'id généré par requestAnimationFrame, on s'en sert pour gérer la pause.
-  var maxTime = 7260;
+  var maxTime = 7260; //temps maximum de jeu (2 minutes * 3600 ms)
 
 
   /***************************************************************************
@@ -97,11 +97,6 @@ window.document.addEventListener('DOMContentLoaded', function() {
       pauseButton.setAttribute('value', 'Reprendre');
     };
 
-  var resetGame = function(){
-    window.location.reload(forceget);
-
-  }
-
   };
 
 
@@ -113,7 +108,7 @@ window.document.addEventListener('DOMContentLoaded', function() {
     {
       nom: 'plateforme',
       sx: 1500,
-      sy: 400,
+      sy: 1100,
       dx: 10,
       dy: 600,
       dw: 250,
@@ -121,11 +116,11 @@ window.document.addEventListener('DOMContentLoaded', function() {
       ratio: 1,
       scenery: true,
       pf: true
-
-    }, {
+    },
+    {
       nom: 'plateforme2',
       sx: 1500,
-      sy: 400,
+      sy: 1100,
       dx: 750,
       dy: 580,
       dw: 250,
@@ -133,56 +128,75 @@ window.document.addEventListener('DOMContentLoaded', function() {
       ratio: 1,
       scenery: true,
       pf: true
-
-    },{
+    },
+    {
+      nom: 'plateforme3',
+      sx: 1500,
+      sy: 1100,
+      dx: 450,
+      dy: 580,
+      dw: 100,
+      dh: 100,
+      ratio: 1,
+      scenery: true,
+      pf: true
+    },
+    {
       nom: 'html',
-      sx: 1800,
-      sy: 600,
+      sx: 2100,
+      sy: 500,
       dx: 10,
       dy: 500,
       moving: false,
       bonus: true
-    }, {
+    },
+    {
       nom: 'css',
-      sx: 1800,
-      sy: 700,
+      sx: 2100,
+      sy: 600,
       moving: true,
       bonus: true
-    }, {
+    },
+    {
       nom: 'javascript',
-      sx: 1800,
-      sy: 800,
+      sx: 2100,
+      sy: 700,
       dx: 900,
       dy: 500,
       bonus: true
-    }, {
+    },
+    {
       nom: 'angular',
-      sx: 1800,
+      sx: 2100,
+      sy: 800,
+      moving: true,
+      bonus: true
+    },
+    {
+      nom: 'mongo',
+      sx: 2100,
       sy: 900,
       moving: true,
       bonus: true
-    }, {
-      nom: 'mongo',
-      sx: 1800,
+    },
+    {
+      nom: 'node',
+      sx: 2100,
       sy: 1000,
       moving: true,
       bonus: true
-    }, {
-      nom: 'node',
-      sx: 1800,
+    },
+    {
+      nom: 'meteor',
+      sx: 2100,
       sy: 1100,
       moving: true,
       bonus: true
-    }, {
-      nom: 'meteor',
-      sx: 1800,
-      sy: 1200,
-      moving: true,
-      bonus: true
-    }, {
+    },
+    {
       nom: 'flora',
-      sx: 1100,
-      sy: 400,
+      sx: 1300,
+      sy: 1100,
       dx: 0,
       dy: 590,
       dw: 100,
@@ -191,8 +205,8 @@ window.document.addEventListener('DOMContentLoaded', function() {
     },
     {
       nom: 'flora2',
-      sx: 1300,
-      sy: 400,
+      sx: 1100,
+      sy: 1100,
       dx: 350,
       dy: 575,
       dw: 100,
@@ -202,7 +216,7 @@ window.document.addEventListener('DOMContentLoaded', function() {
     {
       nom: 'flora3',
       sx: 900,
-      sy: 400,
+      sy: 1100,
       dx: 670,
       dy: 575,
       dw: 100,
@@ -212,27 +226,29 @@ window.document.addEventListener('DOMContentLoaded', function() {
     {
       nom: 'life1',
       sx: 1900,
-      sy: 400,
+      sy: 1100,
       dx: 10,
       dy: 10,
       dw: 100,
       dh: 100,
       ratio: 0.5,
       scenery: true
-    }, {
+    },
+    {
       nom: 'life2',
       sx: 1900,
-      sy: 400,
+      sy: 1100,
       dx: 70,
       dy: 10,
       dw: 100,
       dh: 100,
       ratio: 0.5,
       scenery: true
-    }, {
+    },
+    {
       nom: 'life3',
       sx: 1900,
-      sy: 400,
+      sy: 1100,
       dx: 130,
       dy: 10,
       dw: 100,
@@ -243,7 +259,7 @@ window.document.addEventListener('DOMContentLoaded', function() {
     {
       nom: 'monster',
       sx: 0,
-      sy: 800,
+      sy: 600,
       dx: 10,
       dy: 530,
       moving: true,
@@ -255,7 +271,7 @@ window.document.addEventListener('DOMContentLoaded', function() {
     }, {
       nom: 'monster2',
       sx: 0,
-      sy: 800,
+      sy: 600,
       dx: 0,
       dy: 600,
       danger: true,
@@ -267,10 +283,10 @@ window.document.addEventListener('DOMContentLoaded', function() {
     }, {
       nom: 'lapin',
       sx: 0,
-      sy: 1200,
+      sy: 1000,
       dx: 100,
       dy: 610,
-      vx: 3,
+      vx: 2,
       numberOfFrames: 7,
       ticksPerFrame: 3,
       moving: true,
@@ -280,7 +296,7 @@ window.document.addEventListener('DOMContentLoaded', function() {
     }, {
       nom: 'dino',
       sx: 0,
-      sy: 1000,
+      sy: 800,
       dx: 750,
       dy: 510,
       vx: 1,
@@ -515,30 +531,32 @@ var Heros = function(options) {
           };
 
 
-          if (this.dx + this.dw > stage[i].dx + stage[i].dw ||
-            this.dx + this.hitBoxAdj < stage[i].dx ||
-            this.dy > stage[i].dy + stage[i].dh ||
-            this.dh + this.dy < stage[i].dy) {
+          if (this.dx + this.dw - this.hitBoxAdj> stage[i].dx + stage[i].dw - this.hitBoxAdj ||
+            this.dx + this.hitBoxAdj < stage[i].dx +this.hitBoxAdj||
+            this.dy + this.hitBoxAdj > stage[i].dy + stage[i].dh - this.hitBoxAdj||
+            this.dh + this.dy - this.hitBoxAdj< stage[i].dy+this.hitBoxAdj) {
               if (this.onPlatform) {
-                if (this.dx < this.currentPlatform.dx || this.dx + this.dw / 2 > this.currentPlatform.dx + this.currentPlatform.dw) {
-                  if (this.dir == false) {
+                if (this.dx + this.hitBoxAdj< this.currentPlatform.dx  || this.dx - this.hitBoxAdj+ this.dw / 2 > this.currentPlatform.dx + this.currentPlatform.dw - this.hitBoxAdj) {
+                  // if (this.dir == false) {
+                  //   this.floor.bottom = 700;
+                  // }
+                  if (this.dy + this.dh - this.hitBoxAdj){
                     this.floor.bottom = 700;
                   }
                   this.onPlatform = false;
-                  this.floor.bottom = 700;
                 }
               }
               if (this.dying) {
                 this.dying = false;
                 this.sy = 200;
                 this.numberOfFrames = 22;
-                this.ticksPerFrame = 4;
-                this.dx = canvas.width / 2;
+                this.ticksPerFrame = 5;
+                this.dx = 450;
                 this.dy = 400;
                 this.floor.bottom = 700;
-                window.setTimeout(function() {
-                  launchlistener();
-                }, 1000);
+                // window.setTimeout(function() {
+                  // launchlistener();
+                // }, 1000);
               }
             }
           }
@@ -546,16 +564,8 @@ var Heros = function(options) {
       };
 
       this.vsEnnemy = function(ennemy) {
-        document.removeEventListener('keydown', keyControl);
         //repositionne l'ennemi à sa position originale
         ennemy.dx = ennemy.moveFrom;
-
-        //bloque le personnage
-        this.canGoRight = false;
-        this.canGoLeft = false;
-        this.sy = 500;
-        this.numberOfFrames = 6;
-        this.ticksPerFrame = 20;
 
         for (var i = 0; i < stage.length; i++) {
           if (stage[i].nom == 'life' + this.lifes) {
@@ -589,15 +599,11 @@ var Heros = function(options) {
         bonus.numberOfFrames = 1;
         this.skills += 1;
         var skillCount = this.skills;
-        putOnPause();
         if (this.skills <7){
           $(document).ready(function(){
             $('#message').html("Bravo ! Vous avez attrapé la compétence <br> <span style=\"text-transform : uppercase\"><strong>" + bonus.nom + '</strong></span> <img src =\"./img/'+ bonus.nom + '.png\"><br>Plus que ' + parseInt(7-skillCount) + " à attraper ! ");
             $('#message').fadeIn('fast').delay(2000).fadeOut('slow');
           })
-          window.setTimeout(function(){
-            putOnPause();
-          },2000)
         }
       };
 
@@ -605,14 +611,14 @@ var Heros = function(options) {
       GESTION COLLISION AVEC platform
     *************************************************************************/
       this.vsPlatform = function(currentPlatform) {
-        if (this.dy < currentPlatform.dy) {
+        if (this.dy + this.hitBoxAdj < currentPlatform.dy + this.hitBoxAdj) {
           this.floor.bottom = currentPlatform.dy + this.hitBoxAdj;
           this.maxJump = this.floor.bottom - 200;
-        } else if (this.dy >= currentPlatform.dy) {
-          if (this.dx <= currentPlatform.dx) {
+        } else if (this.dy + this.hitBoxAdj >= currentPlatform.dy + this.hitBoxAdj) {
+          if (this.dx + this.hitBoxAdj <= currentPlatform.dx + this.hitBoxAdj) {
             this.dx = currentPlatform.dx - this.dw;
           };
-          if (this.dx >= currentPlatform.dx) {
+          if (this.dx + this.hitBoxAdj >= currentPlatform.dx + this.hitBoxAdj) {
             this.dx = currentPlatform.dx + currentPlatform.dw
           }
         } else {
@@ -692,11 +698,13 @@ var Heros = function(options) {
           } else if (this.vx < this.vMax) {
             this.vx += this.vAccel;
             if (this.vx > 0) {
-              this.sy = 600;
+              this.sx = 0;
+              this.sy = 400;
               this.numberOfFrames = 9;
             };
             if (this.vx < 0) {
-              this.sy = 700;
+              this.sx = 0;
+              this.sy = 500;
               this.numberOfFrames = 9;
             };
           };
@@ -745,6 +753,10 @@ var Heros = function(options) {
         break;
 
         case 32:
+        tim.canJump = true;
+        break;
+
+        case 27:
         putOnPause();
         break;
       };
@@ -770,6 +782,10 @@ var Heros = function(options) {
         break;
 
         case 38:
+        tim.canJump = false;
+        break;
+
+        case 32:
         tim.canJump = false;
         break;
       };
@@ -859,7 +875,7 @@ var Heros = function(options) {
     var tim = getHeros({
       sx: 0,
       sy: 200,
-      dx: 500,
+      dx: 470,
       dy: 400,
       dw: 100,
       dh: 100,
